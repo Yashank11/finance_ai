@@ -273,33 +273,6 @@ function App() {
           </button>
         </div>
 
-        {/* API Settings Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid var(--border-glass)', paddingTop: '16px', marginTop: '12px' }}>
-          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.05em' }}>BACKEND API ENDPOINT</span>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <input
-              type="text"
-              className="glass-input"
-              value={apiBaseUrl}
-              onChange={(e) => {
-                setApiBaseUrl(e.target.value);
-                localStorage.setItem('api_base_url', e.target.value);
-              }}
-              style={{ flex: 1, fontSize: '10px', padding: '6px' }}
-              placeholder="e.g. https://my-backend.onrender.com"
-            />
-            <button 
-              className="glass-btn" 
-              style={{ padding: '6px', fontSize: '9px' }}
-              onClick={() => {
-                setApiBaseUrl('https://finance-ai-c1ps.onrender.com');
-                localStorage.removeItem('api_base_url');
-              }}
-            >
-              Reset
-            </button>
-          </div>
-        </div>
       </aside>
 
       {/* Main Panel */}
