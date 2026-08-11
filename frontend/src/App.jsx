@@ -29,7 +29,7 @@ import ScenarioTab from './components/ScenarioTab';
 
 function App() {
   const [apiBaseUrl, setApiBaseUrl] = useState(() => {
-    return localStorage.getItem('api_base_url') || 'http://127.0.0.1:8000';
+    return localStorage.getItem('api_base_url') || 'https://finance-ai-c1ps.onrender.com';
   });
   const [activeTab, setActiveTab] = useState('overview');
   const [companyName, setCompanyName] = useState('NVIDIA');
@@ -292,7 +292,7 @@ function App() {
               className="glass-btn" 
               style={{ padding: '6px', fontSize: '9px' }}
               onClick={() => {
-                setApiBaseUrl('http://127.0.0.1:8000');
+                setApiBaseUrl('https://finance-ai-c1ps.onrender.com');
                 localStorage.removeItem('api_base_url');
               }}
             >
