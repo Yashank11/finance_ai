@@ -27,9 +27,10 @@ import RAGChatTab from './components/RAGChatTab';
 import UploadTab from './components/UploadTab';
 import ScenarioTab from './components/ScenarioTab';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
-
 function App() {
+  const [apiBaseUrl, setApiBaseUrl] = useState(() => {
+    return localStorage.getItem('api_base_url') || 'http://127.0.0.1:8000';
+  });
   const [activeTab, setActiveTab] = useState('overview');
   const [companyName, setCompanyName] = useState('NVIDIA');
   const [activeData, setActiveData] = useState(null);
@@ -48,7 +49,7 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/company/analyze`, {
+      const response = await fetch(`${apiBaseUrl}/api/company/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_name: targetCompany })
@@ -63,7 +64,7 @@ function App() {
       }
     } catch (err) {
       console.error(err);
-      setError('Could not connect to the backend server. Make sure FastAPI is running on port 8000.');
+      setError('Could not connect to the backend server. Make sure the FastAPI backend is running and the URL endpoint is correct.');
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ function App() {
   // Fetch watchlist
   const fetchWatchlist = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/watchlist`);
+      const response = await fetch(`${apiBaseUrl}/api/watchlist`);
       if (response.ok) {
         const data = await response.json();
         setWatchlist(data);
@@ -85,7 +86,7 @@ function App() {
   // Add to watchlist
   const addToWatchlist = async (name) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/watchlist`, {
+      const response = await fetch(`${apiBaseUrl}/api/watchlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_name: name })
@@ -102,7 +103,7 @@ function App() {
   // Delete from watchlist
   const removeFromWatchlist = async (ticker) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/watchlist/${ticker}`, {
+      const response = await fetch(`${apiBaseUrl}/api/watchlist/${ticker}`, {
         method: 'DELETE'
       });
       if (response.ok) {
@@ -118,7 +119,7 @@ function App() {
   const runMonitoringCheck = async () => {
     setCheckingAlerts(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/watchlist/monitor`, {
+      const response = await fetch(`${apiBaseUrl}/api/watchlist/monitor`, {
         method: 'POST'
       });
       if (response.ok) {
@@ -271,6 +272,34 @@ function App() {
             <Plus size={12} /> Add Current to Watchlist
           </button>
         </div>
+
+        {/* API Settings Section */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid var(--border-glass)', paddingTop: '16px', marginTop: '12px' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.05em' }}>BACKEND API ENDPOINT</span>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <input
+              type="text"
+              className="glass-input"
+              value={apiBaseUrl}
+              onChange={(e) => {
+                setApiBaseUrl(e.target.value);
+                localStorage.setItem('api_base_url', e.target.value);
+              }}
+              style={{ flex: 1, fontSize: '10px', padding: '6px' }}
+              placeholder="e.g. https://my-backend.onrender.com"
+            />
+            <button 
+              className="glass-btn" 
+              style={{ padding: '6px', fontSize: '9px' }}
+              onClick={() => {
+                setApiBaseUrl('http://127.0.0.1:8000');
+                localStorage.removeItem('api_base_url');
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
       </aside>
 
       {/* Main Panel */}
@@ -321,11 +350,11 @@ function App() {
             {activeTab === 'confidence' && <ConfidenceTab data={activeData} />}
             {activeTab === 'bullbear' && <BullBearTab data={activeData} />}
             {activeTab === 'risks' && <RisksTab data={activeData} />}
-            {activeTab === 'questions' && <AnalystQuestionsTab companyName={companyName} apiBaseUrl={API_BASE_URL} />}
-            {activeTab === 'competitors' && <CompetitorTab activeCompanyData={activeData} apiBaseUrl={API_BASE_URL} />}
-            {activeTab === 'rag' && <RAGChatTab companyName={companyName} apiBaseUrl={API_BASE_URL} />}
-            {activeTab === 'scenario' && <ScenarioTab activeCompanyData={activeData} apiBaseUrl={API_BASE_URL} />}
-            {activeTab === 'upload' && <UploadTab onUploadSuccess={handleUploadSuccess} apiBaseUrl={API_BASE_URL} />}
+            {activeTab === 'questions' && <AnalystQuestionsTab companyName={companyName} apiBaseUrl={apiBaseUrl} />}
+            {activeTab === 'competitors' && <CompetitorTab activeCompanyData={activeData} apiBaseUrl={apiBaseUrl} />}
+            {activeTab === 'rag' && <RAGChatTab companyName={companyName} apiBaseUrl={apiBaseUrl} />}
+            {activeTab === 'scenario' && <ScenarioTab activeCompanyData={activeData} apiBaseUrl={apiBaseUrl} />}
+            {activeTab === 'upload' && <UploadTab onUploadSuccess={handleUploadSuccess} apiBaseUrl={apiBaseUrl} />}
           </div>
         )}
       </main>
